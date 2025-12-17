@@ -4,11 +4,13 @@ import os
 import pathlib
 import csv
 
-def call_studiomdl(mdl_path: str, gameinfo_path: str) -> ([[str]], str):
+def gather_mesh_data(mdl_path: str, gameinfo_path: str) -> ([[str]], str, int):
     # We need to replace index 2 with each model in the folder 
     base_command = ["studiomdl.exe", "-mdlreport", None, "-perf", "-game", gameinfo_path, "-nop4", "-mdlreportspreadsheet"]
     meshes = []
-    game_name = "mod" # placeholder
+    game_name = "mod"
+    max_lod = 0
+    
     for (root, _, files) in os.walk(mdl_path, topdown=True):
         for file in files:
             if file.endswith(".mdl"):
@@ -18,7 +20,7 @@ def call_studiomdl(mdl_path: str, gameinfo_path: str) -> ([[str]], str):
                     returned_output = subprocess.check_output(base_command, text=True)
                 except Exception as e:
                     print(e)
-                    sys.exit()
+                    print("ERROR: Failed to process file. Continuing.")
 
                 # Turn output into list and find entry with dx90
                 entries = returned_output.split("\n")
@@ -29,6 +31,9 @@ def call_studiomdl(mdl_path: str, gameinfo_path: str) -> ([[str]], str):
                 # Replace forward slash with back slash and turn mesh path into list 
                 mesh_data = mesh_entry.split(",")
                 mesh_path = mesh_data[0].replace("/","\\").split("\\")
+                
+                if int(mesh_data[2]) > max_lod:
+                    max_lod = int(mesh_data[2]) 
 
                 # Find game name
                 game_index = mesh_path.index("models") - 1
@@ -38,14 +43,14 @@ def call_studiomdl(mdl_path: str, gameinfo_path: str) -> ([[str]], str):
 
                 meshes.append(mesh_data)
     
-    return meshes, game_name
+    return meshes, game_name, max_lod
 
-def make_spreadsheet(meshes: [[str]], game_name: str, models_root_dir: str) -> None:
-    # "[Path to VTX, VTX file extension, Number of LODs], [Tri count, Batches rendered, Materials used], [Tri count, Batches rendered, Materials used]"
-    # ..\tf_OLD\models\buildables\dispenser.dx80.vtx,.dx80.vtx,5,14172,4,2,9860,4,2,7490,5,2,4928,5,2,3196,5,2,
+def make_spreadsheet(meshes: [[str]], game_name: str, max_lod: int, models_root_dir: str) -> None:
     print(f"Saving to: {game_name}_{models_root_dir}_vtx_data.csv")
-
-    meshes.insert(0, ["Path to VTX", "File Extension", "Number of LODs", "LOD0 Tri Count", "LOD0 Batches Rendered", "LOD0 Materials Used"])
+    heading = ["Path to VTX", "File Extension", "Number of LODs"]
+    for i in range(max_lod):
+        heading.extend([f"LOD{i} Tri Count", f"LOD{i} Batches Rendered", f"LOD{i} Materials Used"])
+    meshes.insert(0, heading)
     
     with open(f"{game_name}_{models_root_dir}_vtx_data.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -64,7 +69,7 @@ def main() -> None:
         sys.exit()
 
     print("Gathering spreadsheet data. This could take a while...")
-    meshes, game_name = call_studiomdl(mdl_path, gameinfo_path)
+    meshes, game_name, max_lod = gather_mesh_data(mdl_path, gameinfo_path)
     
     mdl_root_dir = mdl_path.replace("/", "\\").split("\\")
     try:
@@ -72,7 +77,8 @@ def main() -> None:
     except Exception as e:
         print("DEBUG: No empty space.")
     print("Generating spreadsheet. Nearly there!")
-    make_spreadsheet(meshes, game_name, mdl_root_dir[-1:][0])
+
+    make_spreadsheet(meshes, game_name, max_lod, mdl_root_dir[-1:][0])
     # input("Spreadsheet Complete.\nPress any key to exit.")
 
 if __name__ == "__main__":
