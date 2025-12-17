@@ -40,13 +40,14 @@ def call_studiomdl(mdl_path: str, gameinfo_path: str) -> ([[str]], str):
     
     return meshes, game_name
 
-def make_spreadsheet(meshes: [[str]], game_name: str) -> None:
+def make_spreadsheet(meshes: [[str]], game_name: str, models_root_dir: str) -> None:
     # "[Path to VTX, VTX file extension, Number of LODs], [Tri count, Batches rendered, Materials used], [Tri count, Batches rendered, Materials used]"
     # ..\tf_OLD\models\buildables\dispenser.dx80.vtx,.dx80.vtx,5,14172,4,2,9860,4,2,7490,5,2,4928,5,2,3196,5,2,
-    
-    meshes.insert(0, ["Path to VTX", "File Extension", "Number of LODs", "LOD0 Tri Count", "LOD0 Batches Rendered", "LOD0 Materials Used"])
+    print(f"Saving to: {game_name}_{models_root_dir}_vtx_data.csv")
 
-    with open(f"{game_name}_vtx_data.csv", "w", newline="") as csv_file:
+    meshes.insert(0, ["Path to VTX", "File Extension", "Number of LODs", "LOD0 Tri Count", "LOD0 Batches Rendered", "LOD0 Materials Used"])
+    
+    with open(f"{game_name}_{models_root_dir}_vtx_data.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerows(meshes)
     
@@ -54,7 +55,6 @@ def main() -> None:
     mdl_path = sys.argv[1]
     gameinfo_path = sys.argv[2]  
     print(f"Selected Path: {mdl_path}\nSelected GameInfo: {gameinfo_path}")
-
     if not os.path.isdir(mdl_path) or not os.path.isdir(gameinfo_path):
         if not os.path.isdir(mdl_path):
             print(f"{mdl_path} is not a real path or directory.")
@@ -63,8 +63,16 @@ def main() -> None:
         input("Press any key to exit.")
         sys.exit()
 
+    print("Gathering spreadsheet data. This could take a while...")
     meshes, game_name = call_studiomdl(mdl_path, gameinfo_path)
-    make_spreadsheet(meshes, game_name)
+    
+    mdl_root_dir = mdl_path.replace("/", "\\").split("\\")
+    try:
+        mdl_root_dir.remove("")
+    except Exception as e:
+        print("DEBUG: No empty space.")
+    print("Generating spreadsheet. Nearly there!")
+    make_spreadsheet(meshes, game_name, mdl_root_dir[-1:])
     # input("Spreadsheet Complete.\nPress any key to exit.")
 
 if __name__ == "__main__":
@@ -80,4 +88,13 @@ if __name__ == "__main__":
         print("Incorrect usage: This program should only be run from the 'game/bin' folder.")
         # input("Press any key to exit.")
         # sys.exit()
+    print("-"*50)
+    print("""Welcome to 
+  _____     _                       _            
+ |_   _| __(_) ___ ___  _   _ _ __ | |_ ___ _ __ 
+   | || '__| |/ __/ _ \| | | | '_ \| __/ _ \ '__|
+   | || |  | | (_| (_) | |_| | | | | ||  __/ |   
+   |_||_|  |_|\___\___/ \__,_|_| |_|\__\___|_|   
+""")
+    print("-" * 50 + "\nYour mileage may vary!\n")
     main()
