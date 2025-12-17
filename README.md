@@ -1,8 +1,9 @@
 # tricounter
- Will generate a spreadsheet with data on all of the mdl files of a given folder.
+Will generate a spreadsheet with data on all of the `.mdl` files of a given folder.
 
-## IMPORTANT
-**The data outputted from `studiomdl.exe` is inconsistent and mostly relies on Shader Draw Count instead of actual Tris. Please bare this in mind!**
+> [!IMPORTANT]  
+> **The data outputted from `studiomdl.exe` is inconsistent and mostly relies on Shader Draw Count instead of actual Tris. Please bare this in mind!**
+> This program **does not support** `.vpk` files! Feel free to submit a Pull Request though!
 
 ## Usage
 - Place `tricounter.py` in `game/bin` folder, such as `Team Fortress 2/bin`.

@@ -19,8 +19,8 @@ def gather_mesh_data(mdl_path: str, gameinfo_path: str) -> ([[str]], str, int):
                     base_command[2] = root + "/" + file
                     returned_output = subprocess.check_output(base_command, text=True)
                 except Exception as e:
-                    print(e)
-                    print("ERROR: Failed to process file. Continuing.")
+                    print(" " * 70, end="\r")
+                    print(f"ERROR: Failed to process {file}. Continuing.")
 
                 # Turn output into list and find entry with dx90
                 entries = returned_output.split("\n")
@@ -43,7 +43,6 @@ def gather_mesh_data(mdl_path: str, gameinfo_path: str) -> ([[str]], str, int):
                 meshes.append(mesh_data)
     print(f"{('Analysis Complete '):=<69}|") # nice
             
-    
     return meshes, game_name, max_lod
 
 def make_spreadsheet(meshes: [[str]], game_name: str, max_lod: int, models_root_dir: str) -> None:
@@ -80,7 +79,7 @@ def main() -> None:
     print("Generating spreadsheet. Nearly there!")
 
     make_spreadsheet(meshes, game_name, max_lod, mdl_root_dir[-1:][0])
-    input("Spreadsheet Complete.\nPress any key to exit.")
+    input("> Spreadsheet Complete!\nPress any key to exit.")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -93,15 +92,15 @@ if __name__ == "__main__":
         sys.exit()
     if not os.getcwd().endswith("bin"):
         print("Incorrect usage: This program should only be run from the 'game/bin' folder.")
-        # input("Press any key to exit.")
-        # sys.exit()
-    print("-"*70)
+        input("Press any key to exit.")
+        sys.exit()
+    print("-" * 70)
     print("""Welcome to 
   _____     _                       _            
- |_   _| __(_) ___ ___  _   _ _ __ | |_ ___ _ __ 
+ |_   _| __(_) ___ ___  _   _ _ __ | |_ ___ _ __ *
    | || '__| |/ __/ _ \| | | | '_ \| __/ _ \ '__|
    | || |  | | (_| (_) | |_| | | | | ||  __/ |   
    |_||_|  |_|\___\___/ \__,_|_| |_|\__\___|_|   
 """)
-    print("-" * 70 + "\nYour mileage may vary!\n")
+    print("-" * 70 + "\n*Your mileage may vary!\n")
     main()
