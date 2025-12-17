@@ -10,10 +10,10 @@ def gather_mesh_data(mdl_path: str, gameinfo_path: str) -> ([[str]], str, int):
     meshes = []
     game_name = "mod"
     max_lod = 0
-    
     for (root, _, files) in os.walk(mdl_path, topdown=True):
         for file in files:
             if file.endswith(".mdl"):
+                print(f"Analyzing: {file:=<58}|", end="\r")
                 try:
                     # Replace index 2 with .mdl file path
                     base_command[2] = root + "/" + file
@@ -40,8 +40,9 @@ def gather_mesh_data(mdl_path: str, gameinfo_path: str) -> ([[str]], str, int):
                 game_name = mesh_path[game_index]
                 # Turn mesh path back into string with back slash and replace path data
                 mesh_data[0] = "\\".join(mesh_path[game_index:])
-
                 meshes.append(mesh_data)
+    print(f"{('Analysis Complete '):=<69}|") # nice
+            
     
     return meshes, game_name, max_lod
 
@@ -68,7 +69,7 @@ def main() -> None:
         input("Press any key to exit.")
         sys.exit()
 
-    print("Gathering spreadsheet data. This could take a while...")
+    print("Gathering mesh data. This could take a while...")
     meshes, game_name, max_lod = gather_mesh_data(mdl_path, gameinfo_path)
     
     mdl_root_dir = mdl_path.replace("/", "\\").split("\\")
@@ -79,7 +80,7 @@ def main() -> None:
     print("Generating spreadsheet. Nearly there!")
 
     make_spreadsheet(meshes, game_name, max_lod, mdl_root_dir[-1:][0])
-    # input("Spreadsheet Complete.\nPress any key to exit.")
+    input("Spreadsheet Complete.\nPress any key to exit.")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -94,7 +95,7 @@ if __name__ == "__main__":
         print("Incorrect usage: This program should only be run from the 'game/bin' folder.")
         # input("Press any key to exit.")
         # sys.exit()
-    print("-"*50)
+    print("-"*70)
     print("""Welcome to 
   _____     _                       _            
  |_   _| __(_) ___ ___  _   _ _ __ | |_ ___ _ __ 
@@ -102,5 +103,5 @@ if __name__ == "__main__":
    | || |  | | (_| (_) | |_| | | | | ||  __/ |   
    |_||_|  |_|\___\___/ \__,_|_| |_|\__\___|_|   
 """)
-    print("-" * 50 + "\nYour mileage may vary!\n")
+    print("-" * 70 + "\nYour mileage may vary!\n")
     main()
