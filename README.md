@@ -3,6 +3,7 @@ Will generate a spreadsheet with data on all of the `.mdl` files of a given fold
 
 > [!IMPORTANT]  
 > **The data outputted from `studiomdl.exe` is inconsistent and mostly relies on Shader Draw Count instead of actual Tris. Please bare this in mind!**
+>
 > This program **does not support** `.vpk` files! Feel free to submit a Pull Request though!
 
 ## Usage
