@@ -72,7 +72,7 @@ def main() -> None:
     except Exception as e:
         print("DEBUG: No empty space.")
     print("Generating spreadsheet. Nearly there!")
-    make_spreadsheet(meshes, game_name, mdl_root_dir[-1:])
+    make_spreadsheet(meshes, game_name, mdl_root_dir[-1:][0])
     # input("Spreadsheet Complete.\nPress any key to exit.")
 
 if __name__ == "__main__":
