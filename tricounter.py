@@ -4,7 +4,7 @@ import os
 import pathlib
 import csv
 
-def call_studiomdl(mdl_path: str, gameinfo_path: str) -> [[str]], str:
+def call_studiomdl(mdl_path: str, gameinfo_path: str) -> ([[str]], str):
     # We need to replace index 2 with each model in the folder 
     base_command = ["studiomdl.exe", "-mdlreport", None, "-perf", "-game", gameinfo_path, "-nop4", "-mdlreportspreadsheet"]
     meshes = []
